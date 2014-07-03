@@ -12,20 +12,11 @@
  *  << 引数 >>
  *	[type]
  *		mover			-	フリック方向を指定
- *		spacing			-	ドラックした際に横方向に内容をスライドさせるか
- *		spacingColor	-	ドラックした横スライドの余白の色
  *		rotation		-	ローテーションするかどうか
  *
  *	[mode] -> mover
  *		"left"	-	左フリックで前ページへ
  *		"right"	-	右フリックで前ページへ
- *
- *	[mode] -> spacing
- *		true	-	ドラック可能にする
- *		false	-	ドラック無効にする
- *
- *	[mode] -> spacingColor
- *		"#RRGGBB"	-	色指定
  *
  *	[mode] -> rotation
  *		true	-	ローテーション有効にする
@@ -46,14 +37,26 @@
 			$('.guide',elem).hide();
 		});
 	}
+	
+	function _resize(elem){
+		//$(elem).css("width","90%");
+		//$(elem).css("overflow","hidden");
+		
+		$("ul",elem).css("position","relative");
+		//$("ul",elem).css("width","9900px");
+		//$("ul",elem).css("top","0px");
+		//$("ul",elem).css("left","0px");
+		
+		//$("ul li",elem).width(parseInt($(elem).outerWidth(true)) - $("ul",elem).position().left);
+		
+		//$("ul li",elem).css("margin-right","10px");
+	}
 
     $.fn.mrSimpleSlider = function(options) {
 		return this.each(function(i, elem) {
 			
 			var defaults = {
 					mover: 'right',
-					spacing: false,
-					spacingColor: '#AAA',
 					rotation: true
 			};
 			
@@ -71,6 +74,12 @@
 			function _setAppender(data){ return $(elem).data("appender",data); }
 			function _getT_flg(){ return $(elem).data("t_flg"); }
 			function _setT_flg(data){ return $(elem).data("t_flg",data); }
+			function _getDivs(){ return $(elem).data("divs"); }
+			function _setDivs(data){ return $(elem).data("divs",data); }
+			
+			$(window).resize(function(){
+				_resize(elem);
+			});
 		
 			$(elem).ready(function(){
 				
@@ -96,13 +105,20 @@
 					return;
 				}
 				
+				
 				$(".slidertable tr td:nth-child(2) div",elem).each(function(i){
 					$(this).css("width",""+parseInt(100 / _getCarlist().length)+"%");							
 					_getPointers().push($(this));
 				});
 				
+				_resize(elem);
+				
 				$.each(_getCarlist(),function(i,obj){
 					obj.hide();
+				});
+				
+				$('li',elem).each(function(i){
+					$(this).css("float","left");
 				});
 				
 				_getCarlist()[0].show();
@@ -115,7 +131,7 @@
 				
 				_setOpa($('.prevbutton',elem),0.5);
 				_setOpa($('.nextbutton',elem),0.5);
-				
+
 				$('.prevbutton',elem).bind('tap click',prevview);
 				$('.pointbutton',elem).bind('tap click',pointview);
 				$('.nextbutton',elem).bind('tap click',nextview);
@@ -150,8 +166,14 @@
 				
 				var t_left,t_right;
 				
+				defult_carlist(_getCarlist());
+				defult_pointer_01();
+				_setOpa(_getPointers()[0],1);
+				_getCarlist()[0].show("slide", {direction: "left"}, 100);
+
+				
 				$("ul",elem).bind({			 
-					"touchstart" : function(e){
+					"touchstart mousedown" : function(e){
 						
 						e.preventDefault();
 
@@ -160,50 +182,18 @@
 			
 						log_left = $(this).position().left;
 						log_top  = $(this).position().top;
-
-						if(setting.spacing){
-							log_pos  = $(this).css("position");
-							
-							$(this).parent().prepend("<div class='mrSliderSpaceingDivision'></div>");
-							$('.mrSliderSpaceingDivision',elem)
-								.css("position","absolute")
-								.css("background-color","#FFF")
-								.css("width",$(this).width())
-								.css("height",$(this).height())
-								.css("position","absolute")
-								.css("left",log_left)
-								.css("top",log_top);
-							$(this).parent().prepend("<div class='mrSliderSpaceingDivisionBack'></div>");
-							$('.mrSliderSpaceingDivisionBack',elem)
-								.css("background-color",setting.spacingColor)
-								.css("width",$(this).width())
-								.css("height",$(this).height());
-				
-							log_width = $(this).get(0).style.width;
-							log_height = $(this).get(0).style.height;
-				
-							$(this).css("position","absolute")
-								   .css("width",$(this).width())
-								   .css("height",$(this).height())
-								   .css("left",log_left)
-								   .css("top",log_top);
-						}
+						
 						_setT_flg(true);
 					},
 					
-					'touchmove': function(e) {
+					'touchmove mousemove': function(e) {
 						if(!_getT_flg()) return;
 						var n_left = (isTouch ? event.changedTouches[0].pageX : e.pageX);
 						var n_top  = (isTouch ? event.changedTouches[0].pageY : e.pageY); 
-						
-						if(setting.spacing){
-							$(this).css("left",log_left - (l_left - n_left));
-							$('.mrSliderSpaceingDivision',elem).css("left",log_left - (l_left - n_left));
-						}
 		
 					},
 					
-					"touchend" : function(e){
+					"touchend mouseup" : function(e){
 						if(!_getT_flg()) return;
 						
 						var n_left = (isTouch ? event.changedTouches[0].pageX : e.pageX);
@@ -213,6 +203,8 @@
 							setting.mover == "right" ? nextview() : prevview();
 						}else if((n_left - l_left) < -100){
 							setting.mover == "right" ? prevview() : nextview();
+						}else if((n_top - l_top) > 100){
+						}else if((n_top - l_top) < -100){
 						}else{
 							var form = $("<form></form>");
 							form.attr(
@@ -230,18 +222,6 @@
 							$("#formformxtraformmrslidersliderdivision").remove();
 						}
 						
-						if(setting.spacing){
-							$('.mrSliderSpaceingDivision',elem).remove();
-							$('.mrSliderSpaceingDivisionBack',elem).remove();
-							$(this).css("position",log_pos)
-								   .css("width",log_width)
-								   .css("height",log_height)
-								   .css("left",log_left)
-								   .css("top",log_top);
-						}
-						
-						
-						
 						_setT_flg(false);
 					}
 				});
@@ -255,15 +235,25 @@
 				if(_getMaincounter() > 0){
 					_setMaincounter(_getMaincounter()-1);
 					defult_carlist(_getCarlist());
+					//_getCarlist()[_getMaincounter()+1]
+					//	.hide("fast",function(){ _getCarlist()[_getMaincounter()].fadeIn("fast", function(){ _setClicklock(false); }); });
 					_getCarlist()[_getMaincounter()+1]
-						.hide("fast",function(){ _getCarlist()[_getMaincounter()].fadeIn("fast", function(){ _setClicklock(false); }); });
+						.hide("fast",function(){
+							_getCarlist()[_getMaincounter()].show("slide", {direction: "left"}, 100, function(){
+								_setClicklock(false);
+							});
+						});
 					defult_pointer_01();
 					_setOpa(_getPointers()[_getMaincounter()],1);
 				}else if(setting.rotation){
 					_setMaincounter(_getCarlist().length - 1);
 					defult_carlist(_getCarlist());
 					_getCarlist()[_getMaincounter()]
-						.hide("fast",function(){ _getCarlist()[_getMaincounter()].fadeIn("fast", function(){ _setClicklock(false); }); });
+						.hide("fast",function(){
+							_getCarlist()[_getMaincounter()].show("slide", {direction: "left"}, 100, function(){
+								_setClicklock(false);
+							});
+						});
 					defult_pointer_01();
 					_setOpa(_getPointers()[_getMaincounter()],1);
 				}else{
@@ -292,15 +282,25 @@
 				if(_getMaincounter() < (_getCarlist().length - 1)){
 					_setMaincounter(_getMaincounter()+1);
 					defult_carlist(_getCarlist());
+					//_getCarlist()[_getMaincounter()-1]
+					//	.hide("fast",function(){ _getCarlist()[_getMaincounter()].fadeIn("fast", function(){ _setClicklock(false); }); });
 					_getCarlist()[_getMaincounter()-1]
-						.hide("fast",function(){ _getCarlist()[_getMaincounter()].fadeIn("fast", function(){ _setClicklock(false); }); });
+						.hide("fast",function(){
+							_getCarlist()[_getMaincounter()].show("slide", {direction: "right"}, 100, function(){
+								_setClicklock(false);
+							});
+						});
 					defult_pointer_01();
 					_setOpa(_getPointers()[_getMaincounter()],1);
 				}else if(setting.rotation){
 					_setMaincounter(0);
 					defult_carlist(_getCarlist());
 					_getCarlist()[_getMaincounter()]
-						.hide("fast",function(){ _getCarlist()[_getMaincounter()].fadeIn("fast", function(){ _setClicklock(false); }); });
+						.hide("fast",function(){
+							_getCarlist()[_getMaincounter()].show("slide", {direction: "right"}, 100, function(){
+								_setClicklock(false);
+							});
+						});
 					defult_pointer_01();
 					_setOpa(_getPointers()[_getMaincounter()],1);
 				}else{
