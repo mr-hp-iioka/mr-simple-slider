@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>RM Simple Slider</title>
+<link rel="stylesheet" type="text/css" href="css/mr.simple.slider.css" media="all">
+<script src="js/jquery.js"></script>
+<script src="js/jquery.mr.simple.slider.js"></script>
+<script type="text/javascript">
+<!--//
+
+$(function(){
+
+	$('#sets').click(function(){
+		$('.slider').mrSimpleSlider({mover: "left", spacing: true, spacingColor: "#CCC", rotation: true});
+	});
+	
+	$('#dels').click(function(){
+		$(".slider").mrDeleteSimpleSlider();
+	});
+
+});
+
+//-->
+</script>
+</head>
+<body>
+    <div class="slider" style="width:300px;border:2px solid blue">
+    	<ul>
+        	<li><h1>1</h1>
+            <li><h1>2</h1>
+            <li><h1>3</h1>
+            <li><h1>4</h1>
+            <li><h1>5</h1>
+            <li><h1>6</h1>
+            <li><h1>7</h1>
+        </ul>
+        <div class="guide" style=" zoom:50%;">
+            <table class="slidertable">
+                <tr>
+                    <td align="left"><div class="prevbutton"></div></td>
+                    <td align="center"></td>
+                    <td align="right"><div class="nextbutton"></div></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <button id="sets">スライダーを実装</button>
+    <button id="dels">スライダーを破棄</button>
+</body>
+</html>
