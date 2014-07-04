@@ -41,8 +41,9 @@
 	function _resize(elem){
 		//$(elem).css("width","90%");
 		//$(elem).css("overflow","hidden");
-		
+		logh = parseInt($("li",elem).height()) + parseInt($(".guide",elem).height());
 		$("ul",elem).css("position","relative");
+		$(elem).height(logh);
 		//$("ul",elem).css("width","9900px");
 		//$("ul",elem).css("top","0px");
 		//$("ul",elem).css("left","0px");
@@ -239,7 +240,7 @@
 					//	.hide("fast",function(){ _getCarlist()[_getMaincounter()].fadeIn("fast", function(){ _setClicklock(false); }); });
 					_getCarlist()[_getMaincounter()+1]
 						.hide("fast",function(){
-							_getCarlist()[_getMaincounter()].show("slide", {direction: "left"}, 100, function(){
+							_getCarlist()[_getMaincounter()].show("slide", {direction: "left"}, 300, function(){
 								_setClicklock(false);
 							});
 						});
@@ -250,7 +251,7 @@
 					defult_carlist(_getCarlist());
 					_getCarlist()[_getMaincounter()]
 						.hide("fast",function(){
-							_getCarlist()[_getMaincounter()].show("slide", {direction: "left"}, 100, function(){
+							_getCarlist()[_getMaincounter()].show("slide", {direction: "left"}, 300, function(){
 								_setClicklock(false);
 							});
 						});
@@ -286,7 +287,7 @@
 					//	.hide("fast",function(){ _getCarlist()[_getMaincounter()].fadeIn("fast", function(){ _setClicklock(false); }); });
 					_getCarlist()[_getMaincounter()-1]
 						.hide("fast",function(){
-							_getCarlist()[_getMaincounter()].show("slide", {direction: "right"}, 100, function(){
+							_getCarlist()[_getMaincounter()].show("slide", {direction: "right"}, 300, function(){
 								_setClicklock(false);
 							});
 						});
@@ -297,7 +298,7 @@
 					defult_carlist(_getCarlist());
 					_getCarlist()[_getMaincounter()]
 						.hide("fast",function(){
-							_getCarlist()[_getMaincounter()].show("slide", {direction: "right"}, 100, function(){
+							_getCarlist()[_getMaincounter()].show("slide", {direction: "right"}, 300, function(){
 								_setClicklock(false);
 							});
 						});
